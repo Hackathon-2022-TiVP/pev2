@@ -6,13 +6,17 @@ import Home from './views/Home.vue';
 import Plan from './views/Plan.vue';
 import About from './views/About.vue';
 
+import tidbData from './join-tidb.json';
+
 const routes = {
   '/': Home,
   '/plan': Plan,
   '/about': About,
 };
 
-export const planData: any[] = ['', ''];
+const data = JSON.stringify(tidbData)
+
+export const planData: any[] = [data, ''];
 
 Vue.config.productionTip = false;
 
@@ -26,7 +30,7 @@ global.setPlanData = setPlanData;
 
 const app = new Vue({
   data: {
-    currentRoute: '/',
+    currentRoute: '/plan',
   },
   computed: {
     ViewComponent() {

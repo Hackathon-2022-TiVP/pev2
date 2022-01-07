@@ -243,16 +243,20 @@ import tippy from 'tippy.js';
 import { Splitpanes, Pane } from 'splitpanes';
 
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+
+// Sub components.
 import PlanNode from '@/components/PlanNode.vue';
 import Copy from '@/components/Copy.vue';
 import Diagram from '@/components/Diagram.vue';
 import Stats from '@/components/Stats.vue';
+
+// Services.
 import { HelpService, scrollChildIntoParentView } from '@/services/help-service';
 import { PlanService } from '@/services/plan-service';
+
 import { cost, duration, durationClass, json, pgsql, rows } from '@/filters';
-import { CenterMode, HighlightMode, HighlightType, NodeProp, Orientation, ViewMode } from '../enums';
-import { IPlan } from '../iplan';
-import Node from '../inode';
+import { CenterMode, HighlightMode, HighlightType, NodeProp, Orientation, ViewMode } from '@/enums';
+import { IPlan } from '@/iplan';
 
 import Dragscroll from '@/dragscroll';
 
@@ -291,6 +295,7 @@ export default class Plan extends Vue {
   @Prop(String) private planSource!: string;
   @Prop(String) private planQuery!: string;
   @Prop(Number) private zoomTo!: number;
+
   private queryText!: string;
   private plan!: IPlan | null;
   private rootNode!: any;

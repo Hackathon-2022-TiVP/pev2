@@ -55,11 +55,31 @@ export enum HighlightMode {
   showdetails = 4,
 }
 
+// TODO: Node ID --> Node Id, keep all keys written style the same.
+export enum TiDBNodeProp {
+  // plan property keys
+  NODE_TYPE = 'Node ID',
+  ACTUAL_ROWS = 'Actual Rows',
+  PLAN_ROWS = 'Estimated Rows',
+  TASK = 'task',
+  ACCESS_OBJECT = 'access object',
+  OPERATOR_INFO = 'operator info',
+  EXECUTION_INFO = 'execution info',
+  DISK = 'disk',
+  MEMORY = 'memory',
+  PLANS = 'Plans',
+}
+
 export enum NodeProp {
   // plan property keys
-  NODE_TYPE = 'Node Type',
+  NODE_TYPE = 'Node ID',
   ACTUAL_ROWS = 'Actual Rows',
-  PLAN_ROWS = 'Plan Rows',
+  PLAN_ROWS = 'Estimated Rows',
+
+  DISK = 'disk',
+  MEMORY = 'memory',
+  TASK = 'task',
+
   PLAN_WIDTH = 'Plan Width',
   ROWS_REMOVED_BY_FILTER = 'Rows Removed by Filter',
   ROWS_REMOVED_BY_JOIN_FILTER = 'Rows Removed by Join Filter',

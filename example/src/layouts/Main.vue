@@ -1,8 +1,7 @@
 <template>
   <div class="d-flex flex-column vh-100">
     <div class="navbar container flex-shrink-0">
-      <v-link class="btn btn-secondary ml-auto" to="/">New Plan</v-link>
-      <v-link class="btn btn-link" to="/about">About</v-link>
+     <h1>TiDB EXPLAIN Visualizer</h1>
     </div>
     <slot></slot>
   </div>

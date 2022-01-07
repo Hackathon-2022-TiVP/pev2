@@ -1,0 +1,91 @@
+[
+  {
+    "Plan": {
+      "Node ID": "Sort_8",
+      "Estimated Rows": 0.01,
+      "Actual Rows": 4,
+      "task": "root",
+      "access object": "",
+      "operator info": "test.t2.c2",
+      "execution info": "time:3.67ms, loops:2",
+      "disk": "744 Bytes",
+      "memory": "0 B",
+      "Plans": [
+        {
+          "Node ID": "HashJoin_12",
+          "Plan Rows": 0.01,
+          "Actual Rows": 4,
+          "task": "root",
+          "access object": "",
+          "operator info": "CARTESIAN inner join",
+          "execution info": "time:3.64ms, loops:2, build_hash_table:{total:1.71ms, fetch:662.5µs, build:1.05ms}, probe:{concurrency:5, total:10.4ms, max:3.52ms, probe:1.8ms, fetch:8.61ms}",
+          "disk": "N/A",
+          "memory": "11.4 KB",
+          "Plans": [
+            {
+              "Node ID": "TableReader_15(Build)",
+              "Plan Rows": 0,
+              "Actual Rows": 1,
+              "task": "root",
+              "access object": "",
+              "operator info": "data:Selection_14",
+              "execution info": "time:619.3µs, loops:2, cop_task: {num: 1, max: 752µs, proc_keys: 5, rpc_num: 1, rpc_time: 730.4µs, copr_cache_hit_ratio: 0.00} ",
+              "disk": "N/A",
+              "memory": "212 B",
+              "Plans": [
+                {
+                  "Node ID": "Selection_14",
+                  "Plan Rows": 0,
+                  "Actual Rows": 1,
+                  "task": "cop[tikv]",
+                  "access object": "",
+                  "operator info": "eq(test.t1.c1, 0)",
+                  "execution info": "tikv_task:{time:0s, loops:1}, scan_detail: {total_process_keys: 5, total_process_keys_size: 185, total_keys: 6, rocksdb: {delete_skipped_count: 0, key_skipped_count: 5, block: {cache_hit_count: 0, read_count: 0, read_byte: 0 Bytes}}}",
+                  "disk": "N/A",
+                  "memory": "N/A",
+                  "Plans": [
+                    {
+                      "Node ID": "TableFullScan_12",
+                      "Plan Rows": 4,
+                      "Actual Rows": 5,
+                      "task": "cop[tikv]",
+                      "access object": "table:t1",
+                      "operator info": "keep order:false, stats:pseudo",
+                      "execution info": "tikv_task:{time:0s, loops:1}",
+                      "disk": "N/A",
+                      "memory": "N/A"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Node ID": "TableReader_17(Probe)",
+              "Plan Rows": 3,
+              "Actual Rows": 4,
+              "task": "root",
+              "access object": "",
+              "operator info": "data:TableFullScan_16",
+              "execution info": "time:648.6µs, loops:2, cop_task: {num: 1, max: 756.3µs, proc_keys: 4, rpc_num: 1, rpc_time: 743.8µs, copr_cache_hit_ratio: 0.00}",
+              "disk": "N/A",
+              "memory": "229 Bytes",
+              "Plans": [
+                {
+                  "Node ID": "TableFullScan_16",
+                  "Plan Rows": 3.0,
+                  "Actual Rows": 4,
+                  "task": "cop[tikv]",
+                  "access object": "table:t2",
+                  "operator info": "keep order:false, stats:pseudo",
+                  "execution info": "tikv_task:{time:0s, loops:1}, scan_detail: {total_process_keys: 4, total_process_keys_size: 148, total_keys: 5, rocksdb: {delete_skipped_count: 0, key_skipped_count: 4, block: {cache_hit_count: 0, read_count: 0, read_byte: 0 Bytes}}}",
+                  "disk": "N/A",
+                  "memory": "N/A"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+]
