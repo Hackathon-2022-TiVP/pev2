@@ -1,21 +1,28 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import momentDurationFormatSetup from 'moment-duration-format';
-momentDurationFormatSetup(moment);
-import { EstimateDirection, NodeProp, nodePropTypes, PropType } from '@/enums';
-import hljs from 'highlight.js/lib/core';
 import * as langPgsql from 'highlight.js/lib/languages/pgsql';
+import * as langJson from 'highlight.js/lib/languages/json';
+
+import hljs from 'highlight.js/lib/core';
+import momentDurationFormatSetup from 'moment-duration-format';
+
+import { EstimateDirection, nodePropTypes, PropType } from '@/enums';
+
+
+// Init moment duration format plugin
+momentDurationFormatSetup(moment);
+
+// Register highlight languages.
+hljs.registerLanguage('json', langJson);
 hljs.registerLanguage('pgsql', langPgsql);
 
-import * as langJson from 'highlight.js/lib/languages/json';
-hljs.registerLanguage('json', langJson);
 
 export function duration(value: number): string {
   if (value === undefined) {
     return 'N/A';
   }
   if (value < 1000) {
-    return parseFloat(value.toPrecision(3)).toLocaleString()  + 'ms';
+    return parseFloat(value.toPrecision(3)).toLocaleString() + 'ms';
   }
   return moment.duration(value).format('w[w] d[d] h[h] m[m] s[s] SSS[ms]', { largest: 2 });
 }
@@ -45,7 +52,7 @@ export function loops(value: number): string {
 export function factor(value: number): string {
   const f: string = parseFloat(value.toPrecision(2)).toLocaleString();
   const compiled = _.template('${f}&nbsp;<span class="text-muted">&times;</span>');
-  return compiled({f});
+  return compiled({ f });
 }
 
 export function keysToString(value: any): string {
@@ -67,8 +74,8 @@ export function sortKeys(sort: string[], presort: string[] | undefined): string 
 }
 
 export function truncate(text: string, length: number, clamp: string): string {
-    clamp = clamp || '...';
-    return text.length > length ? text.slice(0, length) + clamp : text;
+  clamp = clamp || '...';
+  return text.length > length ? text.slice(0, length) + clamp : text;
 }
 
 export function kilobytes(value: number): string {
@@ -86,7 +93,7 @@ export function formatBytes(value: number, decimals = 2) {
   const i = Math.floor(Math.log(value) / Math.log(k));
   const compiled = _.template('${value} ${unit}');
   const valueString = parseFloat((value / Math.pow(k, i)).toFixed(dm)).toLocaleString();
-  return compiled({value: valueString, unit: units[i]});
+  return compiled({ value: valueString, unit: units[i] });
 }
 
 export function blocks(value: number): string {
@@ -109,7 +116,7 @@ export function list(value: string[] | string): string {
     value = _.escape(value).split(/\s*,\s*/);
   }
   const compiled = _.template('<% _.forEach(lines, function(line) { %><li><%- line %></li><% }); %>');
-  return '<ul class="list-unstyled">' + compiled({lines: value}) + '</ul>';
+  return '<ul class="list-unstyled">' + compiled({ lines: value }) + '</ul>';
 }
 
 import { Vue } from 'vue-property-decorator';
@@ -161,6 +168,7 @@ export function formatNodeProp(key: string, value: any): string {
       return sortGroups(value);
     }
   }
+
   return _.escape(value);
 }
 
@@ -180,9 +188,9 @@ export function durationClass(i: number): string {
 }
 
 export function pgsql(text: string) {
-  return hljs.highlight(text, {language: 'pgsql'}).value;
+  return hljs.highlight(text, { language: 'pgsql' }).value;
 }
 
 export function json(text: string) {
-  return hljs.highlight(text, {language: 'json'}).value;
+  return hljs.highlight(text, { language: 'json' }).value;
 }
