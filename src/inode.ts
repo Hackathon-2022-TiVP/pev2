@@ -1,9 +1,12 @@
-import {NodeProp} from '@/enums';
+import { NodeProp } from '@/enums';
+
 // Class to create nodes when parsing text
 export default class Node {
   [k: string]: any;
+
   constructor(type: string) {
     this[NodeProp.NODE_TYPE] = type;
+
     // tslint:disable-next-line:max-line-length
     const scanMatches = /^((?:Parallel\s+)?(?:Seq\sScan|Tid.*Scan|Bitmap\s+Heap\s+Scan|(?:Async\s+)?Foreign\s+Scan|Update|Insert|Delete))\son\s(\S+)(?:\s+(\S+))?$/.exec(type);
     const bitmapMatches = /^(Bitmap\s+Index\s+Scan)\son\s(\S+)$/.exec(type);
@@ -12,6 +15,7 @@ export default class Node {
     const cteMatches = /^(CTE\sScan)\son\s(\S+)(?:\s+(\S+))?$/.exec(type);
     const functionMatches = /^(Function\sScan)\son\s(\S+)(?:\s+(\S+))?$/.exec(type);
     const subqueryMatches = /^(Subquery\sScan)\son\s(.+)$/.exec(type);
+
     if (scanMatches) {
       this[NodeProp.NODE_TYPE] = scanMatches[1];
       this[NodeProp.RELATION_NAME] = scanMatches[2];
@@ -44,14 +48,16 @@ export default class Node {
       this[NodeProp.NODE_TYPE] = subqueryMatches[1];
       // this[NodeProp.SUBQUERY_NAME] = subqueryMatches[2].replace
     }
-    const parallelMatches = /^(Parallel\s+)(.*)/.exec(this[NodeProp.NODE_TYPE]);
+
+    // Parallel aware Match
+    const parallelMatches = /^(Parallel\s+)(.*)/.exec(type);
     if (parallelMatches) {
       this[NodeProp.NODE_TYPE] = parallelMatches[2];
       this[NodeProp.PARALLEL_AWARE] = true;
     }
 
-    const joinMatches = /(.*)\sJoin$/.exec(this[NodeProp.NODE_TYPE]);
-    const joinModifierMatches = /(.*)\s+(Full|Left|Right|Anti)/.exec(this[NodeProp.NODE_TYPE]);
+    const joinMatches = /(.*)\sJoin$/.exec(type);
+    const joinModifierMatches = /(.*)\s+(Full|Left|Right|Anti)/.exec(type);
     if (joinMatches) {
       this[NodeProp.NODE_TYPE] = joinMatches[1];
       if (joinModifierMatches) {
@@ -60,6 +66,5 @@ export default class Node {
       }
       this[NodeProp.NODE_TYPE] += ' Join';
     }
-
   }
 }

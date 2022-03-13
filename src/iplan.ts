@@ -1,5 +1,6 @@
-import PlanNode from '@/components/PlanNode.vue';
 import { BufferLocation } from '@/enums';
+
+// Whole plan interfaces.
 
 export interface IPlan {
   id: string;
@@ -30,7 +31,7 @@ export interface IPlanStats {
   maxBlocks?: IBlocksStats;
   triggers?: ITrigger[];
   jitTime?: number;
-  settings?: {[key: string]: string};
+  settings?: { [key: string]: string };
 }
 
 export type IBlocksStats = {
