@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import {BufferLocation, EstimateDirection, SortGroupsProp, NodeProp, SortSpaceMemory, WorkerProp} from '@/enums';
-import {splitBalanced} from '@/services/help-service';
+import { BufferLocation, EstimateDirection, SortGroupsProp, NodeProp, SortSpaceMemory, WorkerProp } from '@/enums';
+import { splitBalanced } from '@/services/help-service';
 import { IPlan } from '@/iplan';
 import Node from '@/inode';
 import Worker from '@/iworker';
@@ -21,7 +21,7 @@ export class PlanService {
     planQuery = planQuery.replace(/(\S)(?!$)(\s{2,})/gm, '$1 ');
 
     const plan: IPlan = {
-      id: NodeProp.PEV_PLAN_TAG + new Date().getTime().toString(),
+      id: NodeProp.PLAN_TAG + new Date().getTime().toString(),
       name: planName || 'plan created on ' + moment().format('LLL'),
       createdOn: new Date(),
       content: planContent,
@@ -51,8 +51,8 @@ export class PlanService {
     _.each(node[NodeProp.PLANS], (child) => {
       // Disseminate workers planned info to parallel nodes (ie. Gather children)
       if (!this.isCTE(child) &&
-          child[NodeProp.PARENT_RELATIONSHIP] !== 'InitPlan' &&
-          child[NodeProp.PARENT_RELATIONSHIP] !== 'SubPlan') {
+        child[NodeProp.PARENT_RELATIONSHIP] !== 'InitPlan' &&
+        child[NodeProp.PARENT_RELATIONSHIP] !== 'SubPlan') {
         child[NodeProp.WORKERS_PLANNED_BY_GATHER] = node[NodeProp.WORKERS_PLANNED] ||
           node[NodeProp.WORKERS_PLANNED_BY_GATHER];
       }
@@ -170,12 +170,12 @@ export class PlanService {
 
     _.each(['ACTUAL_ROWS', 'PLAN_ROWS', 'ROWS_REMOVED_BY_FILTER', 'ROWS_REMOVED_BY_JOIN_FILTER'],
       (prop: keyof typeof NodeProp) => {
-      if (!_.isUndefined(node[NodeProp[prop]])) {
-        const revisedProp = prop + '_REVISED' as keyof typeof NodeProp;
-        const loops = node[NodeProp.ACTUAL_LOOPS] || 1;
-        node[NodeProp[revisedProp]] = node[NodeProp[prop]] * loops;
-      }
-    });
+        if (!_.isUndefined(node[NodeProp[prop]])) {
+          const revisedProp = prop + '_REVISED' as keyof typeof NodeProp;
+          const loops = node[NodeProp.ACTUAL_LOOPS] || 1;
+          node[NodeProp[revisedProp]] = node[NodeProp[prop]] * loops;
+        }
+      });
   }
 
   // recursive function to get the sum of actual durations of a a node children
@@ -251,7 +251,7 @@ export class PlanService {
 
     let isJson = false;
     try {
-      isJson =  JSON.parse(source);
+      isJson = JSON.parse(source);
     } catch (error) {
       // continue
     }
@@ -313,7 +313,7 @@ export class PlanService {
       }
     };
     parser.onopenobject = (key: any) => {
-      const o: {[key: string]: any} = {};
+      const o: { [key: string]: any } = {};
       o[key] = null;
       elements.push(o);
     };
@@ -456,13 +456,13 @@ export class PlanService {
         typeRegex +
         '\\s*' +
         nonCapturingGroupOpen +
-          (nonCapturingGroupOpen + estimationRegex + '\\s+' +
-           openParenthesisRegex + actualRegex + closeParenthesisRegex +
-           nonCapturingGroupClose) +
-          '|' +
-          nonCapturingGroupOpen + estimationRegex + nonCapturingGroupClose +
-          '|' +
-          nonCapturingGroupOpen + openParenthesisRegex + actualRegex + closeParenthesisRegex + nonCapturingGroupClose +
+        (nonCapturingGroupOpen + estimationRegex + '\\s+' +
+          openParenthesisRegex + actualRegex + closeParenthesisRegex +
+          nonCapturingGroupClose) +
+        '|' +
+        nonCapturingGroupOpen + estimationRegex + nonCapturingGroupClose +
+        '|' +
+        nonCapturingGroupOpen + openParenthesisRegex + actualRegex + closeParenthesisRegex + nonCapturingGroupClose +
         nonCapturingGroupClose +
         '\\s*$',
         'gm',
@@ -533,7 +533,7 @@ export class PlanService {
         }
 
         if (nodeMatches[9] && nodeMatches[10] || nodeMatches[11] && nodeMatches[12] ||
-            nodeMatches[20] && nodeMatches[21]) {
+          nodeMatches[20] && nodeMatches[21]) {
           newNode[NodeProp.ACTUAL_ROWS] = parseInt(nodeMatches[9] || nodeMatches[11] || nodeMatches[20], 0);
           newNode[NodeProp.ACTUAL_LOOPS] = parseInt(nodeMatches[10] || nodeMatches[12] || nodeMatches[21], 0);
         }
@@ -568,10 +568,10 @@ export class PlanService {
         if (!previousElement.node[NodeProp.PLANS]) {
           previousElement.node[NodeProp.PLANS] = [];
         }
-        if (previousElement.subelementType === 'initplan' ) {
+        if (previousElement.subelementType === 'initplan') {
           newNode[NodeProp.PARENT_RELATIONSHIP] = 'InitPlan';
           newNode[NodeProp.SUBPLAN_NAME] = previousElement.name;
-        } else if (previousElement.subelementType === 'subplan' ) {
+        } else if (previousElement.subelementType === 'subplan') {
           newNode[NodeProp.PARENT_RELATIONSHIP] = 'SubPlan';
           newNode[NodeProp.SUBPLAN_NAME] = previousElement.name;
         }
@@ -803,14 +803,14 @@ export class PlanService {
     return false;
   }
 
-  private parseBuffer(text: string, type: string, el: Node|Worker): void {
+  private parseBuffer(text: string, type: string, el: Node | Worker): void {
     const s = text.split(/=/);
     const method = s[0];
     const value = parseInt(s[1], 0);
     el[_.map([type, method, 'blocks'], _.capitalize).join(' ')] = value;
   }
 
-  private getWorker(node: Node, workerNumber: number): Worker|null {
+  private getWorker(node: Node, workerNumber: number): Worker | null {
     return _.find(node[NodeProp.WORKERS], (worker) => {
       return worker[WorkerProp.WORKER_NUMBER] === workerNumber;
     });
@@ -954,7 +954,7 @@ export class PlanService {
     const matches = sortGroupsRegex.exec(text);
 
     if (matches) {
-      const groups: {[key in SortGroupsProp]: any} = {
+      const groups: { [key in SortGroupsProp]: any } = {
         [SortGroupsProp.GROUP_COUNT]: parseInt(matches[2], 0),
         [SortGroupsProp.SORT_METHODS_USED]: _.map(matches[3].split(','), _.trim),
         [SortGroupsProp.SORT_SPACE_MEMORY]: {

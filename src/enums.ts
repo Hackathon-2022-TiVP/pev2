@@ -1,3 +1,7 @@
+/**
+ * Predefined enums.
+ */
+
 export enum Metric {
   time,
   rows,
@@ -20,10 +24,10 @@ export enum BufferType {
 }
 
 export class HighlightType {
-    public static NONE: string = 'none';
-    public static DURATION: string = 'duration';
-    public static ROWS: string = 'rows';
-    public static COST: string = 'cost';
+  public static NONE: string = 'none';
+  public static DURATION: string = 'duration';
+  public static ROWS: string = 'rows';
+  public static COST: string = 'cost';
 }
 
 export enum EstimateDirection {
@@ -33,9 +37,9 @@ export enum EstimateDirection {
 }
 
 export class ViewMode {
-    public static FULL: string = 'full';
-    public static COMPACT: string = 'compact';
-    public static DOT: string = 'dot';
+  public static FULL: string = 'full';
+  public static COMPACT: string = 'compact';
+  public static DOT: string = 'dot';
 }
 
 export class Orientation {
@@ -107,7 +111,7 @@ export enum NodeProp {
   PRE_SORTED_GROUPS = 'Pre-sorted Groups',
   PRESORTED_KEY = 'Presorted Key',
 
-  // computed by pev
+  // Computed Properties.
   NODE_ID = 'nodeId',
   EXCLUSIVE_DURATION = '*Duration (exclusive)',
   EXCLUSIVE_COST = '*Cost (exclusive)',
@@ -141,7 +145,7 @@ export enum NodeProp {
 
   ARRAY_INDEX_KEY = 'arrayIndex',
 
-  PEV_PLAN_TAG = 'plan_',
+  PLAN_TAG = 'plan_',
 }
 
 export enum PropType {

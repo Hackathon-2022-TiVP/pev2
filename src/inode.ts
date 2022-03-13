@@ -1,3 +1,7 @@
+/**
+ * Single plan node interface.
+ */
+
 import { NodeProp } from '@/enums';
 
 // Class to create nodes when parsing text

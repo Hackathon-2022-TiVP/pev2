@@ -1,3 +1,7 @@
+/**
+ * Handle drag and scroll events on plan viewport.
+ */
+
 export default class Dragscroll {
   private element: Element;
   private listener: boolean;
@@ -17,42 +21,47 @@ export default class Dragscroll {
     this.startScrollPositionX = 0;
     this.startScrollPositionY = 0;
 
-    this.element.addEventListener('mousedown', (e: any) => {
-      if (e.target.closest('.plan-node-body')) {
-        return;
-      }
+    this.element.addEventListener('mousedown', this.handleMouseDownOnPlan);
+    this.element.addEventListener('mousemove', this.handleMouseMoveOnPlan);
+    document.documentElement.addEventListener('mouseup', this.handleMouseUpOnDocument);
+  }
+
+  private handleMouseDownOnPlan(e: any) {
+    if (e.target.closest('.plan-node-body')) {
+      return;
+    }
+
+    e.preventDefault();
+    this.clearSelection();
+
+    this.startMousePositionX = e.screenX;
+    this.startMousePositionY = e.screenY;
+    this.startScrollPositionX = this.element.scrollLeft;
+    this.startScrollPositionY = this.element.scrollTop;
+
+    this.start = true;
+  }
+
+  private handleMouseUpOnDocument(e: any) {
+    e.preventDefault();
+
+    this.startMousePositionX = 0;
+    this.startMousePositionY = 0;
+    this.startScrollPositionX = 0;
+    this.startScrollPositionY = 0;
+
+    this.start = false;
+  }
+
+  private handleMouseMoveOnPlan(e: any) {
+    if (this.listener && this.start) {
       e.preventDefault();
-      this.clearSelection();
 
-      this.startMousePositionX = e.screenX;
-      this.startMousePositionY = e.screenY;
-      this.startScrollPositionX = this.element.scrollLeft;
-      this.startScrollPositionY = this.element.scrollTop;
-
-      this.start = true;
-    });
-
-    document.documentElement.addEventListener('mouseup', (e: any) => {
-      e.preventDefault();
-
-      this.startMousePositionX = 0;
-      this.startMousePositionY = 0;
-      this.startScrollPositionX = 0;
-      this.startScrollPositionY = 0;
-
-      this.start = false;
-    });
-
-    this.element.addEventListener('mousemove', (e: any) => {
-      if (this.listener && this.start) {
-        e.preventDefault();
-
-        this.element.scrollTo(
-          this.startScrollPositionX + (this.startMousePositionX - e.screenX),
-          this.startScrollPositionY + (this.startMousePositionY - e.screenY),
-        );
-      }
-    });
+      this.element.scrollTo(
+        this.startScrollPositionX + (this.startMousePositionX - e.screenX),
+        this.startScrollPositionY + (this.startMousePositionY - e.screenY),
+      );
+    }
   }
 
   private clearSelection() {

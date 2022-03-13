@@ -1,6 +1,8 @@
-import { BufferLocation } from '@/enums';
+/**
+ * Whole plan interfaces.
+ */
 
-// Whole plan interfaces.
+import { BufferLocation } from '@/enums';
 
 export interface IPlan {
   id: string;
