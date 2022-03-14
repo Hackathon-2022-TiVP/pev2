@@ -5,15 +5,15 @@
         <li class="nav-item p-1">
           <a class="nav-link px-2 py-0" :class="{'active' : activeTab === 'plan' }" href="#plan">Plan</a>
         </li>
-        <li class="nav-item p-1">
+        <!-- <li class="nav-item p-1">
           <a class="nav-link px-2 py-0" :class="{'active' : activeTab === 'raw' }" href="#raw">Raw</a>
         </li>
         <li class="nav-item p-1">
           <a class="nav-link px-2 py-0" :class="{'active' : activeTab === 'query', 'disabled': !queryText }" href="#query">Query</a>
-        </li>
-        <li class="nav-item p-1">
+        </li> -->
+        <!-- <li class="nav-item p-1">
           <a class="nav-link px-2 py-0" :class="{'active' : activeTab === 'stats' }" href="#stats">Stats</a>
-        </li>
+        </li> -->
       </ul>
     </div>
 
@@ -125,7 +125,8 @@
           <div class="flex-grow-1 d-flex overflow-hidden">
             <div class="flex-grow-1 overflow-hidden">
               <splitpanes class="default-theme" @resize="viewOptions.diagramWidth = $event[0].size">
-                <pane
+
+                <!-- <pane
                       :size="viewOptions.diagramWidth"
                       class="d-flex"
                       v-if="viewOptions.showDiagram"
@@ -140,8 +141,10 @@
                           <slot name="nodeindex" v-bind:node="node"></slot>
                         </template>
                       </diagram>
-                </pane>
+                </pane> -->
+
                 <pane ref="plan" class="plan d-flex flex-column flex-grow-1 grab-bing overflow-auto">
+                  <!-- Main Plan -->
                   <ul class="main-plan p-2 mb-0">
                     <li>
                       <plan-node :node="rootNode" :plan="plan" :viewOptions="viewOptions" :eventBus="eventBus" ref="root">
@@ -151,6 +154,7 @@
                       </plan-node>
                     </li>
                   </ul>
+                  <!-- CTE plans -->
                   <ul class="init-plans p-2 mb-0" v-if="plan.ctes.length">
                     <li v-for="node in plan.ctes">
                       <plan-node :node="node" :plan="plan" :viewOptions="viewOptions" :eventBus="eventBus" ref="root">
@@ -161,7 +165,9 @@
                     </li>
                   </ul>
                 </pane>
+
               </splitpanes>
+
             </div>
             <div class="small p-2 border-left" v-if="plan && !viewOptions.menuHidden">
               <div class="text-right clearfix">
@@ -211,7 +217,7 @@
         <!-- end Plan tab -->
         </div>
       </div>
-      <div class="tab-pane flex-grow-1 overflow-hidden position-relative" :class="{'show active': activeTab === 'raw' }">
+      <!-- <div class="tab-pane flex-grow-1 overflow-hidden position-relative" :class="{'show active': activeTab === 'raw' }">
         <div class="overflow-hidden d-flex w-100 h-100">
           <div class="overflow-auto flex-grow-1">
             <pre class="small p-2 mb-0"><code v-html="$options.filters.json(planSource)"></code></pre>
@@ -226,13 +232,13 @@
           </div>
         </div>
         <copy :content="queryText" />
-      </div>
-      <div class="tab-pane flex-grow-1 overflow-auto" :class="{'show active': activeTab === 'stats' }">
+      </div> -->
+      <!-- <div class="tab-pane flex-grow-1 overflow-auto" :class="{'show active': activeTab === 'stats' }">
         <stats
           :plan="plan"
         >
         </stats>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -244,9 +250,9 @@ import { Splitpanes, Pane } from 'splitpanes';
 
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import PlanNode from '@/components/PlanNode.vue';
-import Copy from '@/components/Copy.vue';
-import Diagram from '@/components/Diagram.vue';
-import Stats from '@/components/Stats.vue';
+// import Copy from '@/components/Copy.vue';
+// import Diagram from '@/components/Diagram.vue';
+// import Stats from '@/components/Stats.vue';
 import { HelpService, scrollChildIntoParentView } from '@/services/help-service';
 import { PlanService } from '@/services/plan-service';
 import { cost, duration, durationClass, json, pgsql, rows } from '@/filters';
@@ -263,12 +269,12 @@ Vue.component('tippy', TippyComponent);
 @Component({
   name: 'plan',
   components: {
-    Copy,
-    Diagram,
+    // Copy,
+    // Diagram,
     Pane,
     PlanNode,
     Splitpanes,
-    Stats,
+    // Stats,
   },
   directives: {
   },
@@ -285,7 +291,7 @@ export default class Plan extends Vue {
   public $refs!: {
     plan: InstanceType<typeof Pane>,
     root: PlanNode,
-    diagram: InstanceType<typeof Diagram>,
+    // diagram: InstanceType<typeof Diagram>,
   };
 
   @Prop(String) private planSource!: string;
@@ -561,7 +567,7 @@ export default class Plan extends Vue {
     if (cmp) {
       cmp.selected = true;
     }
-    this.$refs.diagram.selected = newVal;
+    // this.$refs.diagram.selected = newVal;
 
     cmp = this.findPlanNode((o: PlanNode) => o.node.nodeId === oldVal);
     if (cmp) {
@@ -577,5 +583,5 @@ export default class Plan extends Vue {
 @import '~highlight.js/styles/github.css';
 
 @import '../assets/scss/variables';
-@import '../assets/scss/pev2';
+@import '../assets/scss/global';
 </style>
