@@ -1,3 +1,7 @@
+/**
+ * Helper module, functions.
+ */
+
 import { IPlan } from '@/iplan';
 
 export class HelpService {
@@ -26,24 +30,33 @@ export const NODE_DESCRIPTIONS: INodeDescription = {
    <strong>Hash Join</strong>.`,
   'HASH JOIN': `joins two record sets by hashing one of them (using a <strong>Hash Scan</strong>).`,
   'AGGREGATE': `groups records together based on a GROUP BY or aggregate function (like <code>sum()</code>).`,
+
   'HASHAGGREGATE': `groups records together based on a GROUP BY or aggregate function (like sum()). Hash Aggregate uses
    a hash to first organize the records by a key.`,
+
   'SEQ SCAN': `finds relevant records by sequentially scanning the input record set. When reading from a table,
    Seq Scans (unlike Index Scans) perform a single read operation (only the table is read).`,
+
   'INDEX SCAN': `finds relevant records based on an <strong>Index</strong>.
     Index Scans perform 2 read operations: one to
     read the index and another to read the actual value from the table.`,
+
   'INDEX ONLY SCAN': `finds relevant records based on an <strong>Index</strong>.
     Index Only Scans perform a single read operation
     from the index and do not read from the corresponding table.`,
+
   'BITMAP HEAP SCAN': `searches through the pages returned by the <strong>Bitmap Index Scan</strong>
     for relevant rows.`,
+
   'BITMAP INDEX SCAN': `uses a <strong>Bitmap Index</strong> (index which uses 1 bit per page)
     to find all relevant pages.
     Results of this node are fed to the <strong>Bitmap Heap Scan</strong>.`,
-    'CTE SCAN': `performs a sequential scan of <strong>Common Table Expression (CTE) query</strong> results. Note that
+
+  'CTE SCAN': `performs a sequential scan of <strong>Common Table Expression (CTE) query</strong> results. Note that
     results of a CTE are materialized (calculated and temporarily stored).`,
-  'MEMOIZE': `is used to cache the results of the inner side of a nested loop. It avoids executing underlying nodes when the results for the current parameters are already in the cache.`,
+
+  'MEMOIZE': `is used to cache the results of the inner side of a nested loop.
+    It avoids executing underlying nodes when the results for the current parameters are already in the cache.`,
 };
 
 interface IHelpMessage {
@@ -54,8 +67,10 @@ export const HELP_MESSAGES: IHelpMessage = {
   'MISSING EXECUTION TIME': `Execution time (or Total runtime) not available for this plan. Make sure you
     use EXPLAIN ANALYZE.`,
   'MISSING PLANNING TIME': 'Planning time not available for this plan.',
+
   'WORKERS PLANNED NOT LAUNCHED': `Less workers than planned were launched.
 Consider modifying max_parallel_workers or max_parallel_workers_per_gather.`,
+
   'WORKERS DETAILED INFO MISSING': `Consider using EXPLAIN (ANALYZE, VERBOSE)`,
   'FUZZY NEEDS VERBOSE': `Information may not be accurate. Use EXPLAIN VERBOSE mode.`,
 };
@@ -90,7 +105,7 @@ export function scrollChildIntoParentView(parent: Element, child: Element, shoul
       - parentRect.width / 2 + childRect.width / 2;
     scrollTop = childRect.top + parent.scrollTop - parentRect.top
       - parentRect.height / 2 + childRect.height / 2;
-    smoothScroll({element: parent, to: {scrollTop, scrollLeft}, duration: 400, done});
+    smoothScroll({ element: parent, to: { scrollTop, scrollLeft }, duration: 400, done });
   } else if (done) {
     done();
   }
