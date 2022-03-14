@@ -21,9 +21,9 @@ export default class Dragscroll {
     this.startScrollPositionX = 0;
     this.startScrollPositionY = 0;
 
-    this.element.addEventListener('mousedown', this.handleMouseDownOnPlan);
-    this.element.addEventListener('mousemove', this.handleMouseMoveOnPlan);
-    document.documentElement.addEventListener('mouseup', this.handleMouseUpOnDocument);
+    this.element.addEventListener('mousedown', this.handleMouseDownOnPlan.bind(this));
+    this.element.addEventListener('mousemove', this.handleMouseMoveOnPlan.bind(this));
+    document.documentElement.addEventListener('mouseup', this.handleMouseUpOnDocument.bind(this));
   }
 
   private handleMouseDownOnPlan(e: any) {
