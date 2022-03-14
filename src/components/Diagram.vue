@@ -58,7 +58,7 @@
             </th>
           </tr>
           <template v-for="row, index in flat">
-            <tr v-if="row[1][nodeProps.SUBPLAN_NAME]">
+            <tr v-if="row[1][nodeProps.SUBPLAN_NAME]" v-bind:key="index">
               <td v-if="!isCTE(row[1])"></td>
               <td
                 class="subplan pr-2"
@@ -80,13 +80,13 @@
             </tr>
             <tr
               class="no-focus-outline node"
+              v-bind:key="index"
               :class="{'selected': row[1].nodeId === selected, 'highlight': row[1].nodeId === highlightedNode}"
               :data-tippy-content="getTooltipContent(row[1])"
               @mouseenter="eventBus.$emit('mouseovernode', row[1].nodeId)"
               @mouseleave="eventBus.$emit('mouseoutnode', row[1].nodeId)"
               :ref="'node_' + row[1].nodeId"
-              >
-
+            >
               <td class="node-index">
                 <a class="font-weight-normal small" :href="'#plan/node/' + row[1].nodeId" @click>#{{row[1].nodeId}}</a>
               </td>

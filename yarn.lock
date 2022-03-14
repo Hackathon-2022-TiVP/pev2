@@ -3156,6 +3156,11 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
+classnames@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.npmmirror.com/classnames/-/classnames-2.3.1.tgz#dfcfa3891e306ec1dad105d0e88f4417b8535e8e"
+  integrity sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA==
+
 clean-css@4.2.x:
   version "4.2.4"
   resolved "https://registry.npmmirror.com/clean-css/-/clean-css-4.2.4.tgz#733bf46eba4e607c6891ea57c24a989356831178"
@@ -9577,11 +9582,6 @@ snapdragon@^0.8.1:
     source-map "^0.5.6"
     source-map-resolve "^0.5.0"
     use "^3.1.0"
-
-snyk@^1.334.0:
-  version "1.866.0"
-  resolved "https://registry.npmmirror.com/snyk/-/snyk-1.866.0.tgz#4a380ffbc65c2837379d94a67e2441c7b8c9461f"
-  integrity sha512-bV0yXm1iJtHKtV2OHA5eBYa6S/1p0bRe1cqDPTO2zzsfnhPJqpvIM6fDjCxSISYMqv00eGFoaNa0MPM25KmUoQ==
 
 sockjs-client@^1.5.0:
   version "1.6.0"

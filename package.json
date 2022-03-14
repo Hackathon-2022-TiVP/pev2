@@ -16,9 +16,7 @@
     "lint": "vue-cli-service lint",
     "build": "vue-cli-service build --target lib --name pev2 ./src/components/Plan.vue && EXTRACT_CSS=true vue-cli-service build --target lib --name pev2 ./src/components/Plan.vue --dest ./dist/components && cp -R ./src/assets/scss ./dist/scss",
     "build-app": "vue-cli-service build --dest dist-app",
-    "test:unit": "jest",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "test:unit": "jest"
   },
   "dependencies": {
     "@types/dragscroll": "0.0.0",
@@ -27,6 +25,7 @@
     "@types/moment-duration-format": "^2.2.3",
     "bootstrap": "^4.6.0",
     "clarinet": "^0.12.3",
+    "classnames": "^2.3.1",
     "core-js": "^3.16.0",
     "highlight.js": "^10.7.2",
     "jquery": "^3.6.0",
@@ -60,7 +59,6 @@
     "prettier": "2.0.5",
     "raw-loader": "^4.0.2",
     "sass-loader": "^8.0.0",
-    "snyk": "^1.334.0",
     "ts-jest": "^25.2.0",
     "typescript": "^3.6.3",
     "vue-jest": "^3.0.5",
@@ -102,6 +100,5 @@
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
     }
-  },
-  "snyk": true
+  }
 }

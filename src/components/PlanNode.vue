@@ -1,19 +1,28 @@
 <template>
-  <div :class="{'subplan': node[nodeProps.SUBPLAN_NAME], 'd-flex flex-column align-items-center': viewOptions.orientation == orientations.TWOD}">
+  <div :class="wrapperClassNames">
     <h4 v-if="node[nodeProps.SUBPLAN_NAME]">{{ node[nodeProps.SUBPLAN_NAME] }}</h4>
-    <div :class="['text-left plan-node', {'detailed': showDetails, 'never-executed': isNeverExecuted, 'parallel': workersPlannedCount, 'selected': selected}]">
-      <div class="workers text-muted py-0 px-1" v-if="workersPlannedCount">
-        <div v-for="index in workersPlannedCountReversed" :style="'top: ' + (1 + index * 2)  + 'px; left: ' + (1 + (index + 1) * 3) + 'px;'"
-             :class="{'border-dashed': index >= workersLaunchedCount}">
+    <div :class="planNodeClassName">
+      <div v-if="workersPlannedCount" class="workers text-muted py-0 px-1">
+        <div
+          v-for="index in workersPlannedCountReversed"
+          v-bind:key="index"
+          :style="`top: ${1 + index * 2}px; left: ${1 + (index + 1) * 3}px`"
+          :class="workersCountClassName(index)"
+        >
           {{ index }}
         </div>
       </div>
       <div class="collapse-handle" v-if="hasChildren">
-        <i :class="['fa fa-fw', {'fa-compress': !collapsed, 'fa-expand': collapsed}]" v-on:click.stop="toggleCollapsed()" title="Collpase or expand child nodes"></i>
+        <i
+          :class="collapseIconClassName"
+          v-on:click.stop="toggleCollapsed()"
+          title="Collpase or expand child nodes"
+        ></i>
       </div>
-      <div class="plan-node-body card"
-           @mouseenter="eventBus.$emit('mouseovernode', node.nodeId)"
-           @mouseleave="eventBus.$emit('mouseoutnode', node.nodeId)"
+      <div
+        class="plan-node-body card"
+        @mouseenter="onMouseOverNode(node.nodeId)"
+        @mouseleave="onMouseOutNode(node.nodeId)"
       >
         <div class="card-body header no-focus-outline"
             v-on:click.stop="showDetails = !showDetails"
@@ -271,7 +280,7 @@
           <div class="tab-pane" :class="{'show active': activeTab === 'misc'}">
             <!-- misc tab -->
             <table class="table table-sm prop-list">
-              <tr v-for="prop in props" v-if="shouldShowProp(prop.key, prop.value)">
+              <tr v-for="(prop, index) in props" v-if="shouldShowProp(prop.key, prop.value)" v-bind:key="index">
                 <td width="40%">{{prop.key}}</td>
                 <td v-html="$options.filters.formatNodeProp(prop.key, prop.value, true)"></td>
               </tr>
@@ -284,26 +293,42 @@
 
       </div>
     </div>
+
+    <!-- Render Child Plans -->
     <ul v-if="plans" :class="['node-children', {'collapsed': collapsed}]">
-      <li v-for="subnode in plans">
-        <plan-node :node="subnode" :plan="plan" :viewOptions="viewOptions" :eventBus="eventBus">
+      <li v-for="(subnode, index) in plans" v-bind:key="index">
+        <plan-node
+          :node="subnode"
+          :plan="plan"
+          :viewOptions="viewOptions"
+          :eventBus="eventBus"
+          :onMouseOverNode="onMouseOverNode"
+          :onMouseOutNode="onMouseOutNode"
+          ref="root"
+        >
           <template v-slot:nodeindex="{ node }">
             <slot name="nodeindex" v-bind:node="node"></slot>
           </template>
         </plan-node>
       </li>
     </ul>
+    <!-- Render Child Plans -->
+
   </div>
 </template>
 
 <script lang="ts">
+import * as _ from 'lodash';
+import classnames from 'classnames';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+
 import { HelpService } from '@/services/help-service';
 import { ColorService } from '@/services/color-service';
 import { cost, duration, factor, formatNodeProp, keysToString, sortKeys, truncate, rows } from '@/filters';
-import { EstimateDirection, HighlightType, NodeProp, nodePropTypes, Orientation,
-         PropType, ViewMode, WorkerProp } from '@/enums';
-import * as _ from 'lodash';
+import {
+  EstimateDirection, HighlightType, NodeProp, notMiscProperties,
+  nodePropTypes, Orientation, PropType, ViewMode, WorkerProp,
+} from '@/enums';
 
 @Component({
   name: 'plan-node',
@@ -318,13 +343,18 @@ import * as _ from 'lodash';
     rows,
   },
 })
+
 export default class PlanNode extends Vue {
   @Prop(Object) public node!: any;
+  @Prop() public onMouseOverNode: any;
+  @Prop() public onMouseOutNode: any;
   public executionTimePercent: number = NaN;
   public selected: boolean = false;
   @Prop(Object) private plan!: any;
   @Prop(Object) private viewOptions!: any;
   @Prop() private eventBus!: InstanceType<typeof Vue>;
+
+  private notMiscProperties: string[] = notMiscProperties;
 
   // UI flags
   private showDetails: boolean = false;
@@ -358,68 +388,32 @@ export default class PlanNode extends Vue {
   private colorService = new ColorService();
   private lodash = _;
 
-  // Returns the list of properties that have already been displayed either in
-  // the main panel or in other detailed tabs.
-  private notMiscProperties: string[] = [
-      NodeProp.NODE_TYPE,
-      NodeProp.CTE_NAME,
-      NodeProp.EXCLUSIVE_DURATION,
-      NodeProp.EXCLUSIVE_COST,
-      NodeProp.TOTAL_COST,
-      NodeProp.PLAN_ROWS,
-      NodeProp.ACTUAL_ROWS,
-      NodeProp.ACTUAL_LOOPS,
-      NodeProp.OUTPUT,
-      NodeProp.WORKERS,
-      NodeProp.WORKERS_PLANNED,
-      NodeProp.WORKERS_LAUNCHED,
-      NodeProp.EXCLUSIVE_SHARED_HIT_BLOCKS,
-      NodeProp.EXCLUSIVE_SHARED_READ_BLOCKS,
-      NodeProp.EXCLUSIVE_SHARED_DIRTIED_BLOCKS,
-      NodeProp.EXCLUSIVE_SHARED_WRITTEN_BLOCKS,
-      NodeProp.EXCLUSIVE_TEMP_READ_BLOCKS,
-      NodeProp.EXCLUSIVE_TEMP_WRITTEN_BLOCKS,
-      NodeProp.EXCLUSIVE_LOCAL_HIT_BLOCKS,
-      NodeProp.EXCLUSIVE_LOCAL_READ_BLOCKS,
-      NodeProp.EXCLUSIVE_LOCAL_DIRTIED_BLOCKS,
-      NodeProp.EXCLUSIVE_LOCAL_WRITTEN_BLOCKS,
-      NodeProp.SHARED_HIT_BLOCKS,
-      NodeProp.SHARED_READ_BLOCKS,
-      NodeProp.SHARED_DIRTIED_BLOCKS,
-      NodeProp.SHARED_WRITTEN_BLOCKS,
-      NodeProp.TEMP_READ_BLOCKS,
-      NodeProp.TEMP_WRITTEN_BLOCKS,
-      NodeProp.LOCAL_HIT_BLOCKS,
-      NodeProp.LOCAL_READ_BLOCKS,
-      NodeProp.LOCAL_DIRTIED_BLOCKS,
-      NodeProp.LOCAL_WRITTEN_BLOCKS,
-      NodeProp.PLANNER_ESTIMATE_FACTOR,
-      NodeProp.PLANNER_ESTIMATE_DIRECTION,
-      NodeProp.SUBPLAN_NAME,
-      NodeProp.GROUP_KEY,
-      NodeProp.HASH_CONDITION,
-      NodeProp.JOIN_TYPE,
-      NodeProp.INDEX_NAME,
-      NodeProp.HASH_CONDITION,
-      NodeProp.EXCLUSIVE_IO_READ_TIME,
-      NodeProp.EXCLUSIVE_IO_WRITE_TIME,
-      NodeProp.IO_READ_TIME, // Exclusive value already shown in IO tab
-      NodeProp.IO_WRITE_TIME, // Exclusive value already shown in IO tab
-      NodeProp.HEAP_FETCHES,
-      NodeProp.WAL_RECORDS,
-      NodeProp.WAL_BYTES,
-      NodeProp.WAL_FPI,
-      NodeProp.NODE_ID,
-      NodeProp.ROWS_REMOVED_BY_FILTER,
-      NodeProp.ROWS_REMOVED_BY_JOIN_FILTER,
-      NodeProp.ACTUAL_ROWS_REVISED,
-      NodeProp.PLAN_ROWS_REVISED,
-      NodeProp.ROWS_REMOVED_BY_FILTER_REVISED,
-      NodeProp.ROWS_REMOVED_BY_JOIN_FILTER_REVISED,
-  ];
-
   public setShowDetails(showDetails: boolean): void {
     this.showDetails = showDetails;
+  }
+
+  private get wrapperClassNames(): string {
+    return classnames({
+      'subplan': this.node[this.nodeProps.SUBPLAN_NAME],
+      'd-flex flex-column align-items-center': this.viewOptions.orientation === this.orientations.TWOD,
+    });
+  }
+
+  private get planNodeClassName(): string {
+    return classnames('text-left plan-node', {
+      'detailed': this.showDetails,
+      'never-executed': this.isNeverExecuted,
+      'parallel': this.workersPlannedCount,
+      'selected': this.selected,
+    });
+  }
+
+  private workersCountClassName(index: number): string {
+    return classnames({ 'border-dashed': index >= this.workersPlannedCount });
+  }
+
+  private get collapseIconClassName(): string {
+    return classnames('fa fa-fw', { 'fa-compress': !this.collapsed, 'fa-expand': this.collapsed });
   }
 
   private created(): void {
@@ -698,7 +692,6 @@ export default class PlanNode extends Vue {
   }
 
   private shouldShowProp(key: string, value: any): boolean {
-
     return (value ||
             nodePropTypes[key] === PropType.increment ||
             key === NodeProp.ACTUAL_ROWS) &&

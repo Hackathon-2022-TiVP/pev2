@@ -147,7 +147,15 @@
                   <!-- Main Plan -->
                   <ul class="main-plan p-2 mb-0">
                     <li>
-                      <plan-node :node="rootNode" :plan="plan" :viewOptions="viewOptions" :eventBus="eventBus" ref="root">
+                      <plan-node
+                        :node="rootNode"
+                        :plan="plan"
+                        :viewOptions="viewOptions"
+                        :eventBus="eventBus"
+                        :onMouseOverNode="onMouseOverNode"
+                        :onMouseOutNode="onMouseOutNode"
+                        ref="root"
+                      >
                         <template v-slot:nodeindex="{ node }">
                           <slot name="nodeindex" v-bind:node="node"></slot>
                         </template>
@@ -341,8 +349,6 @@ export default class Plan extends Vue {
 
   private mounted(): void {
     this.handleScroll();
-    this.eventBus.$on('mouseovernode', this.onMouseOverNode);
-    this.eventBus.$on('mouseoutnode', this.onMouseOutNode);
     this.eventBus.$on('clickcte', this.centerCTE);
   }
 
