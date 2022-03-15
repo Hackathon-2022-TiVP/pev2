@@ -24,20 +24,18 @@
         @mouseenter="onMouseOverNode(node.nodeId)"
         @mouseleave="onMouseOutNode(node.nodeId)"
       >
-        <div class="card-body header no-focus-outline"
-            v-on:click.stop="showDetails = !showDetails"
-        >
+        <div class="card-body header no-focus-outline" v-on:click.stop="showDetails = !showDetails">
           <header class="mb-0">
             <h4 class="text-body">
-              <a class="font-weight-normal small" :href="'#plan/node/' + node.nodeId" @click.stop>#{{node.nodeId}}</a>
+              <a class="font-weight-normal small" :href="`#plan/node/${node.nodeId}`" @click.stop>#{{node.nodeId}}</a>
               {{ getNodeName() }}
             </h4>
             <div class="float-right">
-              <span v-if="durationClass" :class="'p-0  d-inline-block mb-0 ml-1 text-nowrap alert ' + durationClass" content="Slow" v-tippy><i class="fa fa-fw fa-clock"></i></span>
-              <span v-if="costClass" :class="'p-0  d-inline-block mb-0 ml-1 text-nowrap alert ' + costClass" content="Cost is high" v-tippy><i class="fa fa-fw fa-dollar-sign"></i></span>
-              <span v-if="estimationClass" :class="'p-0  d-inline-block mb-0 ml-1 text-nowrap alert ' + estimationClass" content="Bad estimation for number of rows" v-tippy><i class="fa fa-fw fa-thumbs-down"></i></span>
-              <span v-if="rowsRemovedClass" :class="'p-0  d-inline-block mb-0 ml-1 text-nowrap alert ' + rowsRemovedClass" :content="filterTooltip" v-tippy><i class="fa fa-fw fa-filter"></i></span>
-              <span v-if="heapFetchesClass" :class="'p-0  d-inline-block mb-0 ml-1 text-nowrap alert ' + heapFetchesClass" content="Heap Fetches number is high" v-tippy="{arrow: true}"><i class="fa fa-fw fa-exchange-alt"></i></span>
+              <span v-if="durationClass" :class="tipIconClassName(durationClass)" content="Slow" v-tippy><i class="fa fa-fw fa-clock"></i></span>
+              <span v-if="costClass" :class="tipIconClassName(costClass)" content="Cost is high" v-tippy><i class="fa fa-fw fa-dollar-sign"></i></span>
+              <span v-if="estimationClass" :class="tipIconClassName(estimationClass)" content="Bad estimation for number of rows" v-tippy><i class="fa fa-fw fa-thumbs-down"></i></span>
+              <span v-if="rowsRemovedClass" :class="tipIconClassName(rowsRemovedClass)" :content="filterTooltip" v-tippy><i class="fa fa-fw fa-filter"></i></span>
+              <span v-if="heapFetchesClass" :class="tipIconClassName(heapFetchesClass)" content="Heap Fetches number is high" v-tippy="{arrow: true}"><i class="fa fa-fw fa-exchange-alt"></i></span>
               <span v-if="rowsRemoved && !rowsRemovedClass" class="p-0  d-inline-block mb-0 ml-1 text-nowrap" :content="filterTooltip" v-tippy><i class="fa fa-fw fa-filter text-muted"></i></span>
             </div>
             <span v-if="viewOptions.viewMode === viewModes.FULL">
@@ -89,38 +87,67 @@
               <span v-html="highlightValue"></span>
             </span>
           </div>
-
         </div>
 
+        <!-- Card Header. -->
         <div v-if="showDetails" class="card-header border-top">
           <div v-if="getNodeTypeDescription()" class="node-description">
-            <span class="node-type">{{node[nodeProps.NODE_TYPE]}} Node</span>&nbsp;<span v-html="getNodeTypeDescription()"></span>
+            <span class="node-type">{{ node[nodeProps.NODE_TYPE] }} Node</span>&nbsp;<span v-html="getNodeTypeDescription()"></span>
           </div>
           <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item">
-              <a class="nav-link" :class="{'active' : activeTab === 'general' }" @click.prevent="setActiveTab('general')" href>General</a>
+              <a
+                class="nav-link"
+                :class="{'active': activeTab === 'general'}"
+                @click.prevent="setActiveTab('general')"
+                href
+              >General</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-nowrap" :class="{'active' : activeTab === 'iobuffer', 'disabled': !shouldShowIoBuffers }" @click.prevent="setActiveTab('iobuffer')" href>IO & Buffers</a>
+              <a
+                class="nav-link text-nowrap"
+                :class="{'active' : activeTab === 'iobuffer', 'disabled': !shouldShowIoBuffers }"
+                @click.prevent="setActiveTab('iobuffer')"
+                href
+              >IO & Buffers</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" :class="{'active' : activeTab === 'output', 'disabled': !node[nodeProps.OUTPUT] }" @click.prevent="setActiveTab('output')" href>Output</a>
+              <a
+                class="nav-link"
+                :class="{'active' : activeTab === 'output', 'disabled': !node[nodeProps.OUTPUT] }"
+                @click.prevent="setActiveTab('output')"
+                href
+              >Output</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" :class="{'active' : activeTab === 'workers', 'disabled': !(node[nodeProps.WORKERS_PLANNED] || node[nodeProps.WORKERS_PLANNED_BY_GATHER]) }" @click.prevent="setActiveTab('workers')" href>Workers</a>
+              <a
+                class="nav-link"
+                :class="{'active' : activeTab === 'workers', 'disabled': !(node[nodeProps.WORKERS_PLANNED] || node[nodeProps.WORKERS_PLANNED_BY_GATHER]) }"
+                @click.prevent="setActiveTab('workers')"
+                href
+              >Workers</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" :class="{'active' : activeTab === 'misc' }" @click.prevent="setActiveTab('misc')" href>Misc</a>
+              <a
+                href
+                class="nav-link"
+                :class="{'active' : activeTab === 'misc' }"
+                @click.prevent="setActiveTab('misc')"
+              >Misc</a>
             </li>
           </ul>
         </div>
-        <div class="card-body tab-content" v-if="showDetails">
+        <!-- Card Header. -->
+        
+        <!-- Card Body -->
+        <div v-if="showDetails" class="card-body tab-content">
           <div class="tab-pane" :class="{'show active': activeTab === 'general' }">
+
             <!-- general -->
             <div v-if="plan.isAnalyze">
               <i class="fa fa-fw fa-clock text-muted"></i>
               <b>Timing:</b>&nbsp;
-              <span :class="'p-0 px-1 rounded alert ' + durationClass" v-html="formattedProp('EXCLUSIVE_DURATION')"></span>
+              <span :class="`p-0 px-1 rounded alert ${durationClass}`" v-html="formattedProp('EXCLUSIVE_DURATION')"></span>
               <template v-if="executionTimePercent !== Infinity">
                 |
                 <strong>{{executionTimePercent}}</strong><span class="text-muted">%</span>
@@ -128,7 +155,11 @@
             </div>
             <div>
               <i class="fa fa-fw fa-align-justify text-muted"></i>
-              <b>Rows:</b> <span class="px-1">{{ tilde + formattedProp('ACTUAL_ROWS_REVISED') }}</span> <span class="text-muted" v-if="node[nodeProps.PLAN_ROWS]">(Planned: {{ tilde + formattedProp('PLAN_ROWS_REVISED') }})</span>
+              <b>Rows:</b>
+              <span class="px-1">{{ tilde + formattedProp('ACTUAL_ROWS_REVISED') }}</span>
+              <span class="text-muted" v-if="node[nodeProps.PLAN_ROWS]">
+                (Planned: {{ tilde + formattedProp('PLAN_ROWS_REVISED') }})
+              </span>
               <span v-if="plannerRowEstimateDirection !== estimateDirections.none && shouldShowPlannerEstimate">
                 |
                 <span v-if="plannerRowEstimateDirection === estimateDirections.over"><i class="fa fa-arrow-up"></i> over</span>
@@ -154,15 +185,18 @@
               <b>Heap Fetches:</b>&nbsp;
               <span :class="'p-0 px-1 rounded alert ' + heapFetchesClass" v-html="formattedProp('HEAP_FETCHES')"></span>
               &nbsp;
-              <i class="fa fa-fw fa-info-circle text-muted" v-if="heapFetchesClass"
+              <i
+                class="fa fa-fw fa-info-circle text-muted"
+                v-if="heapFetchesClass"
                 content="Visibility map may be out-of-date. Consider using VACUUM or change autovacuum settings."
                 v-tippy="{arrow: true}"
               ></i>
-              </span>
             </div>
             <div v-if="node[nodeProps.EXCLUSIVE_COST]">
               <i class="fa fa-fw fa-dollar-sign text-muted"></i>
-              <b>Cost:</b> <span :class="'p-0 px-1 mr-1 alert ' + costClass">{{ formattedProp('EXCLUSIVE_COST') }}</span> <span class="text-muted">(Total: {{ formattedProp('TOTAL_COST') }})</span>
+              <b>Cost:</b>
+              <span :class="'p-0 px-1 mr-1 alert ' + costClass">{{ formattedProp('EXCLUSIVE_COST') }}</span>
+              <span class="text-muted">(Total: {{ formattedProp('TOTAL_COST') }})</span>
             </div>
             <div v-if="node[nodeProps.ACTUAL_LOOPS] > 1">
               <i class="fa fa-fw fa-undo text-muted"></i>
@@ -171,6 +205,7 @@
             </div>
             <!-- general tab -->
           </div>
+
           <div class="tab-pane" :class="{'show active': activeTab === 'iobuffer' }">
             <!-- iobuffer tab -->
             <div v-if="node[nodeProps.EXCLUSIVE_IO_READ_TIME] || node[nodeProps.EXCLUSIVE_IO_WRITE_TIME]" class="mb-2">
@@ -230,9 +265,11 @@
             </div>
             <!-- iobuffer tab -->
           </div>
+
           <div class="tab-pane overflow-auto text-monospace" :class="{'show active': activeTab === 'output' }" v-html="formattedProp('OUTPUT')" style="max-height: 200px">
             <!-- output tab -->
           </div>
+
           <div class="tab-pane" :class="{'show active': activeTab === 'workers' }" v-if="node[nodeProps.WORKERS_PLANNED] || node[nodeProps.WORKERS_PLANNED_BY_GATHER]">
             <!-- workers tab -->
             <div v-if="(node[nodeProps.WORKERS_PLANNED] || node[nodeProps.WORKERS_PLANNED_BY_GATHER]) && viewOptions.viewMode === viewModes.FULL">
@@ -290,6 +327,7 @@
             <!-- misc tab -->
           </div>
         </div>
+        <!-- Card Body -->
 
       </div>
     </div>
@@ -564,6 +602,10 @@ export default class PlanNode extends Vue {
 
   private getBarColor(percent: number) {
     return this.colorService.numberToColorHsl(percent);
+  }
+
+  private tipIconClassName(className: string) {
+    return classnames(`p-0 d-inline-block mb-0 ml-1 text-nowrap alert ${className}`);
   }
 
   private get durationClass() {
