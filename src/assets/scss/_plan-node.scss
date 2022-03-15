@@ -1,6 +1,8 @@
 $compact-width: 50px;
 $bg-color: #fff;
+
 .plan-node {
+  user-select: none;
   text-decoration: none;
   color: $text-color;
   display: inline-block;
@@ -255,7 +257,6 @@ ul.node-children.collapsed {
       display: none;
     }
   }
-
   .classic .plan & li::before {
     top: 7px;
   }

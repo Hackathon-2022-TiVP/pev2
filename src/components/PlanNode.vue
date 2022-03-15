@@ -47,7 +47,9 @@
 
           <div v-if="viewOptions.viewMode === viewModes.FULL" class="text-left text-monospace">
             <div v-if="node[nodeProps.RELATION_NAME]" :class="{'line-clamp-2': !showDetails}">
-              <span class="text-muted">on&nbsp;</span><span v-if="node[nodeProps.SCHEMA]">{{node[nodeProps.SCHEMA]}}.</span>{{node[nodeProps.RELATION_NAME]}}
+              <span class="text-muted">on&nbsp;</span>
+              <span v-if="node[nodeProps.SCHEMA]">{{node[nodeProps.SCHEMA]}}.</span>
+              {{node[nodeProps.RELATION_NAME]}}
               <span v-if="node[nodeProps.ALIAS]">
                 <span class="text-muted">as</span>
                 {{node[nodeProps.ALIAS]}}
@@ -80,7 +82,7 @@
 
           <div v-if="viewOptions.highlightType !== highlightTypes.NONE && highlightValue !== null">
             <div class="progress node-bar-container" style="height: 5px;">
-              <div class="progress-bar" role="progressbar" v-bind:style="{ width: barWidth + '%', 'background-color': getBarColor(barWidth)}" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+              <div class="progress-bar" role="progressbar" :style="{ width: barWidth + '%', 'background-color': getBarColor(barWidth)}"></div>
             </div>
             <span class="node-bar-label" v-if="shouldShowNodeBarLabel()">
               <span class="text-muted">{{viewOptions.highlightType}}:</span>&nbsp;
@@ -92,7 +94,9 @@
         <!-- Card Header. -->
         <div v-if="showDetails" class="card-header border-top">
           <div v-if="getNodeTypeDescription()" class="node-description">
-            <span class="node-type">{{ node[nodeProps.NODE_TYPE] }} Node</span>&nbsp;<span v-html="getNodeTypeDescription()"></span>
+            <span class="node-type">{{ node[nodeProps.NODE_TYPE] }} Node</span>
+            &nbsp;
+            <span v-html="getNodeTypeDescription()"></span>
           </div>
           <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item">
@@ -209,9 +213,7 @@
           <div class="tab-pane" :class="{'show active': activeTab === 'iobuffer' }">
             <!-- iobuffer tab -->
             <div v-if="node[nodeProps.EXCLUSIVE_IO_READ_TIME] || node[nodeProps.EXCLUSIVE_IO_WRITE_TIME]" class="mb-2">
-              <b>
-                I/O Timings:
-              </b>
+              <b>I/O Timings:</b>
               <span v-if="node[nodeProps.EXCLUSIVE_IO_READ_TIME]" class="ml-2">
                 <b>Read:&nbsp;</b>
                 {{ formattedProp('EXCLUSIVE_IO_READ_TIME') }}
@@ -221,9 +223,7 @@
                 {{ formattedProp('EXCLUSIVE_IO_WRITE_TIME') }}
               </span>
             </div>
-            <b>
-              Blocks:
-            </b>
+            <b>Blocks:</b>
             <table class="table table-sm">
               <tr>
                 <td></td>
@@ -255,51 +255,59 @@
               </tr>
             </table>
             <div v-if="node[nodeProps.WAL_RECORDS] || node[nodeProps.WAL_BYTES]" class="mb-2">
-              <b>
-                <span class="more-info" content="Write-Ahead Logging" v-tippy>WAL</span>:
-              </b>
+              <b><span class="more-info" content="Write-Ahead Logging" v-tippy>WAL</span>:</b>
               {{ formattedProp('WAL_RECORDS') }} records <small>({{ formattedProp('WAL_BYTES') }})</small>
-              <span v-if="node[nodeProps.WAL_FPI]"> -
+              <span v-if="node[nodeProps.WAL_FPI]">-
               <span class="more-info" content="WAL Full Page Images" v-tippy>FPI</span>: {{ formattedProp('WAL_FPI') }}
               </span>
             </div>
             <!-- iobuffer tab -->
           </div>
 
-          <div class="tab-pane overflow-auto text-monospace" :class="{'show active': activeTab === 'output' }" v-html="formattedProp('OUTPUT')" style="max-height: 200px">
+          <div
+            :class="{ 'tab-pane overflow-auto text-monospace': true, 'show active': activeTab === 'output' }"
+            v-html="formattedProp('OUTPUT')" style="max-height: 200px"
+          >
             <!-- output tab -->
           </div>
 
-          <div class="tab-pane" :class="{'show active': activeTab === 'workers' }" v-if="node[nodeProps.WORKERS_PLANNED] || node[nodeProps.WORKERS_PLANNED_BY_GATHER]">
+          <div
+            :class="{ 'tab-pane': true, 'show active': activeTab === 'workers' }"
+            v-if="node[nodeProps.WORKERS_PLANNED] || node[nodeProps.WORKERS_PLANNED_BY_GATHER]"
+          >
             <!-- workers tab -->
             <div v-if="(node[nodeProps.WORKERS_PLANNED] || node[nodeProps.WORKERS_PLANNED_BY_GATHER]) && viewOptions.viewMode === viewModes.FULL">
-              <b>Workers planned: </b> <span class="px-1">{{ node[nodeProps.WORKERS_PLANNED] || node[nodeProps.WORKERS_PLANNED_BY_GATHER] }}</span>
+              <b>Workers planned: </b>
+              <span class="px-1">{{ node[nodeProps.WORKERS_PLANNED] || node[nodeProps.WORKERS_PLANNED_BY_GATHER] }}</span>
               <em v-if="!node[nodeProps.WORKERS_PLANNED] && !node[nodeProps.WORKERS] && (!plan.isVerbose || !plan.isAnalyze)" class="text-warning">
                 <i class="fa fa-exclamation-triangle cursor-help" :content="getHelpMessage('fuzzy needs verbose')" v-tippy></i>
               </em>
             </div>
             <div v-if="node[nodeProps.WORKERS_LAUNCHED] && viewOptions.viewMode === viewModes.FULL">
-              <b>Workers launched: </b> <span class="px-1">{{ node[nodeProps.WORKERS_LAUNCHED] }}</span>
+              <b>Workers launched: </b>
+              <span class="px-1">{{ node[nodeProps.WORKERS_LAUNCHED] }}</span>
             </div>
             <div v-if="!workersLaunchedCount && node[nodeProps.WORKERS_PLANNED_BY_GATHER]" class="text-muted">
               <em>
                 Detailed information is not available.
-                  <i class="fa fa-info-circle cursor-help" :content="getHelpMessage('workers detailed info missing')" v-tippy></i>
+                <i class="fa fa-info-circle cursor-help" :content="getHelpMessage('workers detailed info missing')" v-tippy></i>
               </em>
             </div>
-
             <div class="accordion" v-if="lodash.isArray(node[nodeProps.WORKERS])">
               <template v-for="(worker, index) in node[nodeProps.WORKERS]">
-                <div class="card">
+                <div class="card" v-bind:key="index">
                   <div class="card-header p-0">
-                    <button class="btn btn-link btn-sm text-secondary" type="button" data-toggle="collapse" :data-target="'#collapse-' + _uid + '-' + index" style="font-size: inherit;">
+                    <button
+                      type="button"
+                      class="btn btn-link btn-sm text-secondary"
+                      data-toggle="collapse"
+                      :data-target="`#collapse-${_uid}-${index}`" style="font-size: inherit;">
                       <i class="fa fa-chevron-right fa-fw"></i>
                       <i class="fa fa-chevron-down fa-fw"></i>
                       Worker {{ worker[workerProps.WORKER_NUMBER] }}
                     </button>
                   </div>
-
-                  <div :id="'collapse-' + _uid + '-' + index" class="collapse">
+                  <div :id="`collapse-${_uid}-${index}`" class="collapse">
                     <div class="card-body p-0">
                       <table class="table table-sm prop-list mb-0">
                         <tr v-for="(value, key) in worker" v-if="shouldShowProp(key, value)">
